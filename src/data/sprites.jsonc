@@ -11,7 +11,7 @@
 // 遊戲中按 H 顯示／隱藏所有碰撞圓；dev server 開著時存檔會自動重新載入。
 // key 對應 public/images 的一張圖（敵人的 key 與 enemies.ts 一致）。
 {
-  "player":   { "r": 14, "image": { "width": 40 } },
+  "player":   { "r": 21, "image": { "width": 60 } },
 
   // ── 敵人 ──
   "carrot":   { "r": 12, "image": { "width": 36, "y": -5 } },  // 身體中心在圖片偏下，圖往上挪讓圓對準身體、不含葉子
