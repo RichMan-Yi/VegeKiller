@@ -16,7 +16,7 @@ export const LANG_LABELS: Record<Lang, string> = { en: 'English', zh: '中文', 
 const DICTS: Record<Lang, Messages> = { en, zh, ko };
 const HTML_LANG: Record<Lang, string> = { en: 'en', zh: 'zh-Hant', ko: 'ko' };
 const STORAGE_KEY = 'vegekiller.lang';
-const DEFAULT_LANG: Lang = 'en';
+const DEFAULT_LANG: Lang = 'zh';
 
 let current: Lang = loadLang();
 applyHtmlLang();

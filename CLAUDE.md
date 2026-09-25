@@ -32,7 +32,7 @@ src/
   systems/SpawnDirector.ts   生成速率、種類解鎖曲線
   systems/SfxBus.ts          音效播放與節流
   scenes/                    Boot → Menu → Game（+ UI / LevelUp / GameOver / GameClear）
-  i18n/                      介面文字 en（基準）/ zh / ko，t('key') 取字，Menu 可切換（預設英文）
+  i18n/                      介面文字 en（基準）/ zh / ko，t('key') 取字，Menu 可切換（預設中文）
 public/images/               所有貼圖（player / enemies/<key> / boss / gem / particle / ground）
 public/audio/bgm.mp3         原創循環配樂（numpy 合成，A 小調 140BPM 8 小節）
 public/audio/sfx/            音效（swing / hit / kill / hurt / pickup / levelup / gameover）
