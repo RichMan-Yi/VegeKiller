@@ -93,7 +93,19 @@ export class GameScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-M', () => {
       this.sound.mute = !this.sound.mute;
     });
-    // 測試用：直接升到 TEST_BOSS_LEVEL 並跳到 BOSS 戰。正式版把這段刪掉
+    // 測試鍵只在 npm run dev 啟用，npm run build 打包的公開版沒有
+    if (import.meta.env.DEV) this.bindDebugKeys();
+
+    this.scene.launch('UI');
+    this.scene.bringToTop('UI');
+  }
+
+  /**
+   * 開發用熱鍵：B = 升到 TEST_BOSS_LEVEL 並進 BOSS 戰，V = 破關畫面，K = 死亡畫面，
+   * H = 顯示／隱藏碰撞圓（調 sprites.jsonc 用）。
+   */
+  private bindDebugKeys() {
+    // 測試用：直接升到 TEST_BOSS_LEVEL 並跳到 BOSS 戰
     this.input.keyboard!.on('keydown-B', () => {
       if (this.phase !== 'normal') return;
       while (this.run.level < TEST_BOSS_LEVEL) {
@@ -105,7 +117,7 @@ export class GameScene extends Phaser.Scene {
       this.player.stats.hp = this.player.stats.maxHp;
       this.startBossFight();
     });
-    // 測試用：直接看結算畫面。V = 破關（跳過 BOSS 戰直接打倒它），K = 死亡。正式版把這段刪掉
+    // 測試用：直接看結算畫面。V = 破關（跳過 BOSS 戰直接打倒它），K = 死亡
     this.input.keyboard!.on('keydown-V', () => {
       if (this.phase === 'normal') this.startBossFight();
       this.onBossDefeated();
@@ -121,9 +133,6 @@ export class GameScene extends Phaser.Scene {
       else world.drawDebug = !world.drawDebug;
       world.debugGraphic.setVisible(world.drawDebug).setDepth(100).clear();
     });
-
-    this.scene.launch('UI');
-    this.scene.bringToTop('UI');
   }
 
   /** BGM 跨場景共用一個實例，重開一局不會疊加播放 */
