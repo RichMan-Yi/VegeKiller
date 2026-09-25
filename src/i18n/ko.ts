@@ -1,0 +1,54 @@
+import type { Messages } from './en';
+
+export const ko: Messages = {
+  'menu.subtitle': '채소 군단이 몰려온다, 살아남아라!',
+  'menu.start': '게임 시작',
+  'menu.startHint': 'Enter / 스페이스로도 시작할 수 있어요',
+  'menu.tip.move': 'WASD / 방향키 이동',
+  'menu.tip.mouse': '마우스를 누르고 있어도 이동',
+  'menu.tip.attack': '공격은 자동',
+  'menu.tip.mute': 'M 음소거',
+
+  'hud.status': 'Lv.{level}   {time}   처치 {kills}   HP {hp}/{maxHp}',
+
+  'levelUp.title': '레벨 업! 하나를 고르세요',
+  'levelUp.titleMore': '레벨 업! 하나를 고르세요　(남은 선택 {count}회)',
+  'levelUp.hint': '← → 선택　스페이스 / Enter 확정\n카드를 클릭하거나 1 / 2 / 3을 눌러도 돼요',
+  'levelUp.rare': '희귀',
+
+  'stat.survived': '버틴 시간',
+  'stat.clearTime': '클리어 시간',
+  'stat.level': '레벨',
+  'stat.kills': '처치',
+  'result.backHint': '스페이스 / Enter 타이틀로',
+
+  'gameOver.headline': '아무리 싫어도 먹어야 해!',
+  'gameOver.retry': '다시 하기',
+
+  'clear.line1': '일 끝!',
+  'clear.line2': '집에 가서 고기 먹자',
+  'clear.again': '한 번 더',
+
+  'upgrade.dmg.name': '칼 갈기',
+  'upgrade.dmg.desc': '공격력 +25%',
+  'upgrade.hp.name': '배부름',
+  'upgrade.hp.desc': '최대 체력 +25, 체력 완전 회복',
+  'upgrade.rate.name': '빠른 손',
+  'upgrade.rate.desc': '공격 간격 -12%',
+  'upgrade.range.name': '긴 자루',
+  'upgrade.range.desc': '공격 범위 +20%',
+  'upgrade.arc.name': '크게 휘두르기',
+  'upgrade.arc.desc': '휘두르기 각도 +25° (최대 300°)',
+  'upgrade.speed.name': '운동화',
+  'upgrade.speed.desc': '이동 속도 +12%',
+  'upgrade.magnet.name': '배고픔',
+  'upgrade.magnet.desc': '경험치 흡수 범위 +45%',
+  'upgrade.blade.name': '쌍검',
+  'upgrade.blade.desc': '한 번 더 휘두른다',
+  'upgrade.knock.name': '밀쳐내기',
+  'upgrade.knock.desc': '넉백 +60%, 붙어 있는 적을 밀어낸다',
+  'upgrade.regen.name': '자가 회복',
+  'upgrade.regen.desc': '초당 체력 0.6 회복',
+  'upgrade.heal.name': '정신 차리기',
+  'upgrade.heal.desc': '즉시 최대 체력의 40% 회복',
+};

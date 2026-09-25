@@ -1,9 +1,8 @@
 import type { PlayerStats } from '../entities/Player';
 
 export interface Upgrade {
+  /** 也是 i18n 的 key：upgrade.<id>.name / upgrade.<id>.desc */
   id: string;
-  name: string;
-  desc: string;
   /** 最多可選幾次，undefined = 無上限 */
   maxStacks?: number;
   /** 稀有度，決定出現在選項裡的機率，undefined = 1 */
@@ -27,16 +26,16 @@ export function tierWeight(u: Upgrade) {
  * 加法且不破壞平衡的（傷害、生命）才留白。
  */
 export const UPGRADES: Upgrade[] = [
-  { id: 'dmg',    name: '磨刀',       desc: '攻擊傷害 +25%',                       apply: (s) => { s.damageMul *= 1.25; } },
-  { id: 'hp',     name: '吃飽了',     desc: '最大生命 +25 並回滿',                  apply: (s) => { s.maxHp += 25; s.hp = s.maxHp; } },
-  { id: 'rate',   name: '快手',       desc: '攻擊間隔 -12%',                       maxStacks: 8, apply: (s) => { s.cooldownMul *= 0.88; } },
-  { id: 'range',  name: '長柄',       desc: '攻擊範圍 +20%',                       maxStacks: 6, apply: (s) => { s.rangeMul *= 1.2; } },
-  { id: 'arc',    name: '大開大闔',   desc: '揮砍角度 +25°（上限 300°）',           maxStacks: 7, apply: (s) => { s.arcBonus += 25; } },
-  { id: 'speed',  name: '跑鞋',       desc: '移動速度 +12%',                       maxStacks: 3, apply: (s) => { s.speedMul *= 1.12; } },
-  { id: 'magnet', name: '飢渴',       desc: '經驗吸取範圍 +45%',                    maxStacks: 4, apply: (s) => { s.magnetMul *= 1.45; } },
-  { id: 'blade',  name: '雙刀流',     desc: '額外多揮一刀',                         maxStacks: 3, tier: 2, apply: (s) => { s.blades += 1; } },
-  { id: 'knock',  name: '震退',       desc: '擊退力道 +60%，把貼身的敵人推開',        maxStacks: 4, apply: (s) => { s.knockbackMul *= 1.6; } },
-  { id: 'regen',  name: '自癒',       desc: '每秒回復 0.6 點生命',                  maxStacks: 5, apply: (s) => { s.regen += 0.6; } },
+  { id: 'dmg',    apply: (s) => { s.damageMul *= 1.25; } },
+  { id: 'hp',     apply: (s) => { s.maxHp += 25; s.hp = s.maxHp; } },
+  { id: 'rate',   maxStacks: 8, apply: (s) => { s.cooldownMul *= 0.88; } },
+  { id: 'range',  maxStacks: 6, apply: (s) => { s.rangeMul *= 1.2; } },
+  { id: 'arc',    maxStacks: 7, apply: (s) => { s.arcBonus += 25; } },
+  { id: 'speed',  maxStacks: 3, apply: (s) => { s.speedMul *= 1.12; } },
+  { id: 'magnet', maxStacks: 4, apply: (s) => { s.magnetMul *= 1.45; } },
+  { id: 'blade',  maxStacks: 3, tier: 2, apply: (s) => { s.blades += 1; } },
+  { id: 'knock',  maxStacks: 4, apply: (s) => { s.knockbackMul *= 1.6; } },
+  { id: 'regen',  maxStacks: 5, apply: (s) => { s.regen += 0.6; } },
   // 無上限，純回血不灌數值。確保後期選項池至少有三個，畫面不會只剩兩張卡
-  { id: 'heal',   name: '回神',       desc: '立刻回復 40% 最大生命',                apply: (s) => { s.hp = Math.min(s.maxHp, s.hp + s.maxHp * 0.4); } },
+  { id: 'heal',   apply: (s) => { s.hp = Math.min(s.maxHp, s.hp + s.maxHp * 0.4); } },
 ];

@@ -105,6 +105,14 @@ export class GameScene extends Phaser.Scene {
       this.player.stats.hp = this.player.stats.maxHp;
       this.startBossFight();
     });
+    // 測試用：直接看結算畫面。V = 破關（跳過 BOSS 戰直接打倒它），K = 死亡。正式版把這段刪掉
+    this.input.keyboard!.on('keydown-V', () => {
+      if (this.phase === 'normal') this.startBossFight();
+      this.onBossDefeated();
+    });
+    this.input.keyboard!.on('keydown-K', () => {
+      if (this.phase !== 'done') this.endRun();
+    });
     // 調整 sprites.jsonc 用：顯示／隱藏所有碰撞框
     this.input.keyboard!.on('keydown-H', () => {
       const world = this.physics.world;
@@ -194,7 +202,6 @@ export class GameScene extends Phaser.Scene {
     const swing = this.weapon.update(now, targets);
     let killCount = 0;
     for (const hit of swing.hits) {
-      this.showDamage(hit.enemy.x, hit.enemy.y, hit.damage);
       if (!hit.killed) continue;
       if (hit.enemy === this.bossRef) {
         this.onBossDefeated();
@@ -295,25 +302,6 @@ export class GameScene extends Phaser.Scene {
     emitter.setDepth(4);
     emitter.explode(9);
     this.time.delayedCall(420, () => emitter.destroy());
-  }
-
-  private showDamage(x: number, y: number, amount: number) {
-    const t = this.add.text(x, y - 12, String(Math.round(amount)), {
-      fontFamily: 'system-ui, sans-serif',
-      fontSize: '15px',
-      color: '#fff3c4',
-      stroke: '#2b1a10',
-      strokeThickness: 3,
-    });
-    t.setOrigin(0.5).setDepth(20);
-    this.tweens.add({
-      targets: t,
-      y: y - 40,
-      alpha: 0,
-      duration: 480,
-      ease: 'Quad.easeOut',
-      onComplete: () => t.destroy(),
-    });
   }
 
   /**

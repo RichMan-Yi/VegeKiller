@@ -32,6 +32,7 @@ src/
   systems/SpawnDirector.ts   生成速率、種類解鎖曲線
   systems/SfxBus.ts          音效播放與節流
   scenes/                    Boot → Menu → Game（+ UI / LevelUp / GameOver / GameClear）
+  i18n/                      介面文字 en（基準）/ zh / ko，t('key') 取字，Menu 可切換（預設英文）
 public/images/               所有貼圖（player / enemies/<key> / boss / gem / particle / ground）
 public/audio/bgm.mp3         原創循環配樂（numpy 合成，A 小調 140BPM 8 小節）
 public/audio/sfx/            音效（swing / hit / kill / hurt / pickup / levelup / gameover）
@@ -70,7 +71,9 @@ Phaser 翻面不會繞 origin，helper 都處理掉了。武器命中用 `hitGap
 
 - **新蔬菜**：在 `data/enemies.ts` 加一筆 `EnemyDef`、在 `data/sprites.jsonc` 加同名一行
   （r + image），再放一張 `public/images/enemies/<key>.png`，不需其他改動。
-- **新強化**：在 `data/upgrades.ts` 加一筆 `Upgrade`。有上限的用 `maxStacks`。
+- **新強化**：在 `data/upgrades.ts` 加一筆 `Upgrade`，並在 `i18n/` 三個語系各加
+  `upgrade.<id>.name` / `upgrade.<id>.desc`。有上限的用 `maxStacks`。
+- **介面文字**：不要在場景裡直接寫字串，先在 `i18n/en.ts` 加 key，zh / ko 沒補齊 tsc 會報錯。
 - **難度調整**：`SpawnDirector` 的 `rateAt()`（生成速率）、`enemies.ts` 的 `hp` / `unlockAt`。
   敵人血量與速度刻意不隨時間成長，難度只靠數量與新種類推進。
 

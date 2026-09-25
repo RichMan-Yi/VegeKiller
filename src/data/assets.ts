@@ -20,6 +20,16 @@ export const IMAGE_ASSETS: { key: string; path: string }[] = [
   { key: 'ground', path: 'images/ground.png' },
 ];
 
+/**
+ * 介面用的圖（標題等）。不是場上角色，所以不需要在 sprites.jsonc 登記，
+ * 顯示大小由各場景自己排版決定。
+ */
+export const UI_IMAGE_ASSETS: { key: string; path: string }[] = [
+  { key: 'title', path: 'images/title.png' },
+  { key: 'defeated', path: 'images/defeated.png' },
+  { key: 'victory', path: 'images/victory.png' },
+];
+
 /** 把這張圖縮放到 sprites.jsonc 指定的顯示寬度（image.width）所需的倍率 */
 export function artScale(scene: Phaser.Scene, key: string): number {
   return spriteDef(key).image.width / scene.textures.getFrame(key).width;

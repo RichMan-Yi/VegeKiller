@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { UPGRADES, tierWeight, type Upgrade } from '../data/upgrades';
 import type { PlayerStats } from '../entities/Player';
 import type { GameScene } from './GameScene';
+import { t, upgradeText } from '../i18n';
 
 const taken = new Map<string, number>();
 export function resetUpgrades() {
@@ -106,7 +107,7 @@ export class LevelUpScene extends Phaser.Scene {
     );
 
     this.add
-      .text(w / 2, h * 0.72, '← → 選擇　空白鍵 / Enter 確定\n也可以直接點擊，或按 1 / 2 / 3', {
+      .text(w / 2, h * 0.72, t('levelUp.hint'), {
         fontFamily: 'system-ui, sans-serif',
         fontSize: '14px',
         color: '#8d7f70',
@@ -122,7 +123,7 @@ export class LevelUpScene extends Phaser.Scene {
   /** 連升多級時提示還有幾次可以選 */
   private titleText() {
     const pending = (this.scene.get('Game') as GameScene).pendingLevelUpCount;
-    return pending > 1 ? `升級了！選一個　(還有 ${pending - 1} 次)` : '升級了！選一個';
+    return pending > 1 ? t('levelUp.titleMore', { count: pending - 1 }) : t('levelUp.title');
   }
 
   private bindKeys() {
@@ -144,25 +145,29 @@ export class LevelUpScene extends Phaser.Scene {
 
   private makeCard(up: Upgrade, cx: number, cy: number, w: number, h: number, index: number) {
     const root = this.add.container(cx, cy);
+    const text = upgradeText(up.id);
 
     const box = this.add.rectangle(0, 0, w, h, BG_IDLE).setStrokeStyle(2, LINE_IDLE);
     box.setInteractive({ useHandCursor: true });
 
     const name = this.add
-      .text(0, -h / 2 + 30, up.name, {
+      .text(0, -h / 2 + 30, text.name, {
         fontFamily: 'system-ui, sans-serif',
         fontSize: '22px',
         color: '#ffe9b8',
       })
       .setOrigin(0.5);
+    // 窄螢幕的卡片很窄，英文／韓文名稱比中文長，放不下就縮小字級
+    const nameMaxW = w - 12;
+    if (name.width > nameMaxW) name.setFontSize(Math.max(12, Math.floor((22 * nameMaxW) / name.width)));
 
     const desc = this.add
-      .text(0, -h / 2 + 64, up.desc, {
+      .text(0, -h / 2 + 64, text.desc, {
         fontFamily: 'system-ui, sans-serif',
         fontSize: '14px',
         color: '#cfc3b4',
         align: 'center',
-        wordWrap: { width: w - 32 },
+        wordWrap: { width: w - 32, useAdvancedWrap: true },
       })
       .setOrigin(0.5, 0);
 
@@ -179,7 +184,7 @@ export class LevelUpScene extends Phaser.Scene {
     if ((up.tier ?? 1) >= 2) {
       root.add(
         this.add
-          .text(w / 2 - 10, -h / 2 + 8, '稀有', {
+          .text(w / 2 - 10, -h / 2 + 8, t('levelUp.rare'), {
             fontFamily: 'system-ui, sans-serif',
             fontSize: '12px',
             color: '#ffd166',
