@@ -25,8 +25,6 @@ export interface PlayerStats {
   magnet: number;
   magnetMul: number;
   blades: number;
-  /** 「橫掃」額外構到的扇形外目標數 */
-  bonusTargets: number;
   knockbackMul: number;
   regen: number;
 }
@@ -47,7 +45,6 @@ export function createStats(): PlayerStats {
     magnet: 70,
     magnetMul: 1,
     blades: 1,
-    bonusTargets: 0,
     knockbackMul: 1,
     regen: 0,
   };

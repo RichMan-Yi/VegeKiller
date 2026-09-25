@@ -194,7 +194,7 @@ export class GameScene extends Phaser.Scene {
     const swing = this.weapon.update(now, targets);
     let killCount = 0;
     for (const hit of swing.hits) {
-      this.showDamage(hit.enemy.x, hit.enemy.y, hit.damage, hit.bonus);
+      this.showDamage(hit.enemy.x, hit.enemy.y, hit.damage);
       if (!hit.killed) continue;
       if (hit.enemy === this.bossRef) {
         this.onBossDefeated();
@@ -297,11 +297,11 @@ export class GameScene extends Phaser.Scene {
     this.time.delayedCall(420, () => emitter.destroy());
   }
 
-  private showDamage(x: number, y: number, amount: number, bonus = false) {
+  private showDamage(x: number, y: number, amount: number) {
     const t = this.add.text(x, y - 12, String(Math.round(amount)), {
       fontFamily: 'system-ui, sans-serif',
-      fontSize: bonus ? '17px' : '15px',
-      color: bonus ? '#6fd3ff' : '#fff3c4',
+      fontSize: '15px',
+      color: '#fff3c4',
       stroke: '#2b1a10',
       strokeThickness: 3,
     });

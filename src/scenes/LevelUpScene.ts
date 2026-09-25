@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { UPGRADES, type Upgrade } from '../data/upgrades';
+import { UPGRADES, tierWeight, type Upgrade } from '../data/upgrades';
 import type { PlayerStats } from '../entities/Player';
 import type { GameScene } from './GameScene';
 
@@ -21,11 +21,27 @@ function availableUpgrades(): Upgrade[] {
  * 跳過純回血的 heal，免得浪費一級。
  */
 export function autoPickUpgrade(stats: PlayerStats) {
-  const pool = availableUpgrades().filter((u) => u.id !== 'heal');
-  if (pool.length === 0) return;
-  const up = Phaser.Utils.Array.GetRandom(pool);
+  const [up] = weightedPicks(availableUpgrades().filter((u) => u.id !== 'heal'), 1);
+  if (!up) return;
   up.apply(stats);
   taken.set(up.id, (taken.get(up.id) ?? 0) + 1);
+}
+
+/** 依 tier 權重抽 n 個不重複的強化：每抽一張就從池子拿掉，再從剩下的按權重抽 */
+function weightedPicks(pool: Upgrade[], n: number): Upgrade[] {
+  const rest = pool.slice();
+  const out: Upgrade[] = [];
+  while (out.length < n && rest.length > 0) {
+    const total = rest.reduce((sum, u) => sum + tierWeight(u), 0);
+    let roll = Math.random() * total;
+    let i = 0;
+    for (; i < rest.length - 1; i++) {
+      roll -= tierWeight(rest[i]);
+      if (roll <= 0) break;
+    }
+    out.push(rest.splice(i, 1)[0]);
+  }
+  return out;
 }
 
 const BG_IDLE = 0x241d19;
@@ -123,7 +139,7 @@ export class LevelUpScene extends Phaser.Scene {
   }
 
   private rollChoices(n: number): Upgrade[] {
-    return Phaser.Utils.Array.Shuffle(availableUpgrades()).slice(0, n);
+    return weightedPicks(availableUpgrades(), n);
   }
 
   private makeCard(up: Upgrade, cx: number, cy: number, w: number, h: number, index: number) {
@@ -159,6 +175,18 @@ export class LevelUpScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     root.add([box, name, desc, num]);
+
+    if ((up.tier ?? 1) >= 2) {
+      root.add(
+        this.add
+          .text(w / 2 - 10, -h / 2 + 8, '稀有', {
+            fontFamily: 'system-ui, sans-serif',
+            fontSize: '12px',
+            color: '#ffd166',
+          })
+          .setOrigin(1, 0)
+      );
+    }
 
     // 滑鼠移過去等同於把選取移到這張，鍵盤與滑鼠共用同一個選取狀態
     box.on('pointerover', () => {

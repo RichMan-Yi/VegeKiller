@@ -44,18 +44,12 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 
   /** @returns true 代表這一擊打死了 */
-  hurt(
-    amount: number,
-    knockAngle: number,
-    knockPower: number,
-    now: number,
-    bonus = false
-  ): boolean {
+  hurt(amount: number, knockAngle: number, knockPower: number, now: number): boolean {
     this.hp -= amount;
     const body = this.body as Phaser.Physics.Arcade.Body;
     body.setVelocity(Math.cos(knockAngle) * knockPower, Math.sin(knockAngle) * knockPower);
     this.stunUntil = now + 130;
-    this.flashHit(bonus);
+    this.flashHit();
     return this.hp <= 0;
   }
 
@@ -63,8 +57,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
    * tint 是乘法，套在正式美術上幾乎看不出來，所以再加一下透明度閃爍，
    * 不管圖是什麼顏色都看得到；也不動 scale，碰撞圓不受影響。
    */
-  protected flashHit(bonus: boolean) {
-    this.setTint(bonus ? 0x9de4ff : 0xff9d9d);
+  protected flashHit() {
+    this.setTint(0xff9d9d);
     this.setAlpha(HIT_FLASH_ALPHA);
     this.scene.time.delayedCall(HIT_FLASH_MS, () => {
       if (!this.active) return;

@@ -40,10 +40,10 @@ export class Boss extends Enemy {
   }
 
   /** BOSS 不吃擊退，也不套用受擊時的位移 */
-  override hurt(amount: number, _knockAngle: number, _knockPower: number, now: number, bonus = false) {
+  override hurt(amount: number, _knockAngle: number, _knockPower: number, now: number) {
     this.hp -= amount;
     this.stunUntil = Math.max(this.stunUntil, 0);
-    this.flashHit(bonus);
+    this.flashHit();
     void now;
     if (!this.enraged && this.hp > 0 && this.hpRatio < BOSS.enrageBelow) this.enrage();
     return this.hp <= 0;

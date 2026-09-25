@@ -6,7 +6,18 @@ export interface Upgrade {
   desc: string;
   /** 最多可選幾次，undefined = 無上限 */
   maxStacks?: number;
+  /** 稀有度，決定出現在選項裡的機率，undefined = 1 */
+  tier?: UpgradeTier;
   apply: (s: PlayerStats) => void;
+}
+
+export type UpgradeTier = 1 | 2;
+
+/** 各 tier 的抽選權重，相對於 tier 1。tier 2 出現機率是一般強化的 1/3 */
+export const TIER_WEIGHT: Record<UpgradeTier, number> = { 1: 1, 2: 1 / 3 };
+
+export function tierWeight(u: Upgrade) {
+  return TIER_WEIGHT[u.tier ?? 1];
 }
 
 /**
@@ -23,8 +34,7 @@ export const UPGRADES: Upgrade[] = [
   { id: 'arc',    name: '大開大闔',   desc: '揮砍角度 +25°（上限 300°）',           maxStacks: 7, apply: (s) => { s.arcBonus += 25; } },
   { id: 'speed',  name: '跑鞋',       desc: '移動速度 +12%',                       maxStacks: 3, apply: (s) => { s.speedMul *= 1.12; } },
   { id: 'magnet', name: '飢渴',       desc: '經驗吸取範圍 +45%',                    maxStacks: 4, apply: (s) => { s.magnetMul *= 1.45; } },
-  { id: 'blade',  name: '雙刀流',     desc: '額外多揮一刀',                         maxStacks: 3, apply: (s) => { s.blades += 1; } },
-  { id: 'chain',  name: '連鎖電擊',   desc: '刀氣沿著敵人連鎖跳躍，多電 3 隻（每跳威力 -15%）', maxStacks: 4, apply: (s) => { s.bonusTargets += 3; } },
+  { id: 'blade',  name: '雙刀流',     desc: '額外多揮一刀',                         maxStacks: 3, tier: 2, apply: (s) => { s.blades += 1; } },
   { id: 'knock',  name: '震退',       desc: '擊退力道 +60%，把貼身的敵人推開',        maxStacks: 4, apply: (s) => { s.knockbackMul *= 1.6; } },
   { id: 'regen',  name: '自癒',       desc: '每秒回復 0.6 點生命',                  maxStacks: 5, apply: (s) => { s.regen += 0.6; } },
   // 無上限，純回血不灌數值。確保後期選項池至少有三個，畫面不會只剩兩張卡
