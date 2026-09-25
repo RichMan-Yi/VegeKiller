@@ -20,13 +20,21 @@ src/
   data/sprites.jsonc          每個角色的判定半徑 r + 圖片外觀（顯示寬度、相對角色位置的偏移）
   data/enemies.ts            蔬菜圖鑑：數值 + 配色 + 解鎖時間 + 出現權重
   data/upgrades.ts           升級池
+  data/boss.ts               BOSS 數值（觸發等級、血量、技能節奏）
+  data/progression.ts        升級所需經驗曲線
+  data/palette.ts            參考配色（只有色值，造型一律原創）
+  data/sprites.ts            讀取並解析 sprites.jsonc
   entities/Player.ts         玩家 + PlayerStats
   entities/Enemy.ts          敵人 + 經驗寶石，兩者都跑 Phaser Group 物件池
+  entities/Boss.ts           BOSS，繼承 Enemy 但不進物件池
+  entities/hitbox.ts         applySprite / setFacing / hitGap
   systems/WeaponSystem.ts    揮刀判定與扇形特效
-  systems/SpawnDirector.ts   生成速率、血量倍率、種類解鎖曲線
-  scenes/                    Boot → Menu → Game（+ UI / LevelUp / GameOver）
+  systems/SpawnDirector.ts   生成速率、移動速度倍率、種類解鎖曲線
+  systems/SfxBus.ts          音效播放與節流
+  scenes/                    Boot → Menu → Game（+ UI / LevelUp / GameOver / GameClear）
 public/images/               所有貼圖（player / enemies/<key> / boss / gem / particle / ground）
 public/audio/bgm.mp3         原創循環配樂（numpy 合成，A 小調 140BPM 8 小節）
+public/audio/sfx/            音效（swing / hit / kill / hurt / pickup / levelup / gameover）
 ```
 
 ## 慣例
@@ -68,7 +76,7 @@ Phaser 翻面不會繞 origin，helper 都處理掉了。武器命中用 `hitGap
 
 ## 待辦
 
-- [ ] BOSS 戰（目前最缺張力）
+- [x] BOSS 戰
 - [ ] 第二種武器，讓 build 有分歧
-- [ ] 打擊音效
+- [x] 打擊音效
 - [ ] 正式美術（自己畫 / CC0 素材包 / AI 生圖，尚未決定）
