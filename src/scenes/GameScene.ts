@@ -6,7 +6,7 @@ import { SpawnDirector } from '../systems/SpawnDirector';
 import { xpForLevel } from '../data/progression';
 import { SfxBus } from '../systems/SfxBus';
 import { Boss } from '../entities/Boss';
-import { BOSS } from '../data/boss';
+import { BOSS, BOSS_DEF } from '../data/boss';
 import { artScale } from '../data/assets';
 import { autoPickUpgrade } from './LevelUpScene';
 
@@ -481,7 +481,7 @@ export class GameScene extends Phaser.Scene {
         this.spawnSplat(
           b.x + Phaser.Math.Between(-50, 50),
           b.y + Phaser.Math.Between(-50, 50),
-          0x7a4bb5
+          BOSS_DEF.color
         );
       });
     }

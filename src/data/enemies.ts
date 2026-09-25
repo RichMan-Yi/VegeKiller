@@ -26,7 +26,7 @@ export const ENEMY_DEFS: EnemyDef[] = [
   { key: 'eggplant', name: '茄子',   color: 0x8b5cc4, shade: 0x5c3789, hp: 34,  speed: 118, damage: 11, xp: 3, unlockAt: 70,  weight: 6, knockResist: 0.25 },
   { key: 'scallion', name: '大蔥',   color: 0xd8ea9a, shade: 0x93ad4e, hp: 26,  speed: 215, damage: 9, xp: 3, unlockAt: 90,  weight: 5, knockResist: 0.1 },
   { key: 'broccoli', name: '青花菜', color: 0x4f9e52, shade: 0x2f6b33, hp: 60,  speed: 100, damage: 14, xp: 5, unlockAt: 110, weight: 5, knockResist: 0.5 },
-  { key: 'pumpkin',  name: '南瓜',   color: 0xe8912f, shade: 0xa85c14, hp: 150, speed: 68, damage: 20, xp: 12, unlockAt: 130, weight: 3, knockResist: 0.75 },
+  { key: 'tomato',   name: '番茄',   color: 0xe5413a, shade: 0xa82a22, hp: 150, speed: 68, damage: 20, xp: 12, unlockAt: 130, weight: 3, knockResist: 0.75 },
 ];
 
 export const ENEMY_BY_KEY = new Map(ENEMY_DEFS.map((d) => [d.key, d]));

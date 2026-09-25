@@ -38,8 +38,8 @@ export const BOSS = {
 export const BOSS_DEF: EnemyDef = {
   key: 'boss',
   name: '菜王',
-  color: 0x7a4bb5,
-  shade: 0x4a2a75,
+  color: 0xf1dcb0,
+  shade: 0xc9a46a,
   hp: BOSS.hp,
   speed: BOSS.speed,
   damage: 9999,
