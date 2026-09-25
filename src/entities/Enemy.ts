@@ -21,7 +21,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.setDepth(5);
   }
 
-  spawn(def: EnemyDef, x: number, y: number, speedScale: number) {
+  spawn(def: EnemyDef, x: number, y: number) {
     this.def = def;
     this.setTexture(def.key);
     this.enableBody(true, x, y, true, true);
@@ -30,7 +30,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.setAlpha(1);
     this.setTint(0xffffff);
     this.hp = def.hp;
-    this.speed = def.speed * speedScale;
+    this.speed = def.speed;
     this.stunUntil = 0;
     (this.body as Phaser.Physics.Arcade.Body).setBounce(0);
   }

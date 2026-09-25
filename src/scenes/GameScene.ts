@@ -257,7 +257,7 @@ export class GameScene extends Phaser.Scene {
 
     const e = this.enemies.get() as Enemy | null;
     if (!e) return;
-    e.spawn(def, x, y, this.director.speedScaleAt(elapsedSec));
+    e.spawn(def, x, y);
   }
 
   private killEnemy(e: Enemy) {

@@ -1,23 +1,22 @@
 import { ENEMY_DEFS, type EnemyDef } from '../data/enemies';
 
-/** 依存活時間決定生成速率、血量倍率與可出現的蔬菜種類。 */
+/**
+ * 依存活時間決定生成速率與可出現的蔬菜種類。
+ * 敵人速度固定用 enemies.ts 的 speed，不隨時間放大——
+ * 不然快的種類（大蔥）會被乘到比跑鞋疊滿的玩家還快，完全甩不掉。
+ */
 export class SpawnDirector {
   private accumulator = 0;
 
   /**
    * 每秒生成幾隻，設上限避免後期無止境變密。
    *
-   * 敵人血量刻意不隨時間成長（每種蔬菜固定 enemies.ts 的 hp）：
+   * 敵人血量與速度刻意不隨時間成長（每種蔬菜固定 enemies.ts 的 hp）：
    * 難度只靠「看得見」的東西推——數量變多、更硬的蔬菜解鎖。
    * 舊版的血量倍率跟生成速率相乘，湧入總血量是時間的平方，約 Lv10 就撐不住。
    */
   rateAt(elapsedSec: number) {
     return Math.min(40, 3.5 + elapsedSec * 0.08);
-  }
-
-  /** 敵人移動速度倍率，設上限避免後期變成無解 */
-  speedScaleAt(elapsedSec: number) {
-    return Math.min(1.22, 1 + elapsedSec / 500);
   }
 
   poolAt(elapsedSec: number): EnemyDef[] {
