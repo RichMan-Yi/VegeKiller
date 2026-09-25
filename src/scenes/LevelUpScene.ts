@@ -49,13 +49,47 @@ function weightedPicks(pool: Upgrade[], n: number): Upgrade[] {
 /** 比這個寬才把三張卡橫排；手機直向等窄螢幕改成由上往下排的長條卡 */
 const ROW_MIN_W = 640;
 
-const BG_IDLE = 0x241d19;
-const BG_ON = 0x3a2e22;
-const LINE_IDLE = 0x6b5a4a;
-const LINE_ON = 0x8ecf5a;
+/** 卡片配色；稀有強化整張卡換成金色系，一眼就跟一般卡分得出來 */
+interface CardTheme {
+  bgIdle: number;
+  bgOn: number;
+  lineIdle: number;
+  lineOn: number;
+  name: string;
+  desc: string;
+  num: string;
+  numOn: string;
+}
+
+const NORMAL_THEME: CardTheme = {
+  bgIdle: 0x241d19,
+  bgOn: 0x3a2e22,
+  lineIdle: 0x6b5a4a,
+  lineOn: 0x8ecf5a,
+  name: '#ffe9b8',
+  desc: '#cfc3b4',
+  num: '#8d7f70',
+  numOn: '#8ecf5a',
+};
+
+const RARE_THEME: CardTheme = {
+  bgIdle: 0x3b2a0e,
+  bgOn: 0x5a4115,
+  lineIdle: 0xc9962f,
+  lineOn: 0xffd166,
+  name: '#ffd166',
+  desc: '#f0dcae',
+  num: '#c9962f',
+  numOn: '#ffd166',
+};
+
+function themeOf(up: Upgrade): CardTheme {
+  return (up.tier ?? 1) >= 2 ? RARE_THEME : NORMAL_THEME;
+}
 
 interface Card {
   up: Upgrade;
+  theme: CardTheme;
   root: Phaser.GameObjects.Container;
   box: Phaser.GameObjects.Rectangle;
   name: Phaser.GameObjects.Text;
@@ -184,8 +218,9 @@ export class LevelUpScene extends Phaser.Scene {
   ) {
     const root = this.add.container(cx, cy);
     const text = upgradeText(up.id);
+    const theme = themeOf(up);
 
-    const box = this.add.rectangle(0, 0, w, h, BG_IDLE).setStrokeStyle(2, LINE_IDLE);
+    const box = this.add.rectangle(0, 0, w, h, theme.bgIdle).setStrokeStyle(2, theme.lineIdle);
     box.setInteractive({ useHandCursor: true });
 
     const padX = 18;
@@ -194,7 +229,7 @@ export class LevelUpScene extends Phaser.Scene {
       .text(wide ? -w / 2 + padX : 0, wide ? -h / 2 + 14 : -h / 2 + 30, text.name, {
         fontFamily: 'system-ui, sans-serif',
         fontSize: wide ? '20px' : '22px',
-        color: '#ffe9b8',
+        color: theme.name,
       })
       .setOrigin(wide ? 0 : 0.5, wide ? 0 : 0.5);
     // 卡片窄時英文／韓文名稱比中文長，放不下就縮小字級
@@ -208,7 +243,7 @@ export class LevelUpScene extends Phaser.Scene {
       .text(wide ? -w / 2 + padX : 0, wide ? -h / 2 + 44 : -h / 2 + 64, text.desc, {
         fontFamily: 'system-ui, sans-serif',
         fontSize: '14px',
-        color: '#cfc3b4',
+        color: theme.desc,
         align: wide ? 'left' : 'center',
         wordWrap: { width: wide ? w - padX * 2 - numW : w - 32, useAdvancedWrap: true },
       })
@@ -218,19 +253,20 @@ export class LevelUpScene extends Phaser.Scene {
       .text(wide ? w / 2 - padX - numW / 2 : 0, wide ? 4 : h / 2 - 22, String(index + 1), {
         fontFamily: 'system-ui, sans-serif',
         fontSize: wide ? '18px' : '13px',
-        color: '#8d7f70',
+        color: theme.num,
       })
       .setOrigin(0.5);
 
     root.add([box, name, desc, num]);
 
-    if ((up.tier ?? 1) >= 2) {
+    if (theme === RARE_THEME) {
       root.add(
         this.add
           .text(w / 2 - 10, -h / 2 + 8, t('levelUp.rare'), {
             fontFamily: 'system-ui, sans-serif',
             fontSize: '12px',
-            color: '#ffd166',
+            fontStyle: 'bold',
+            color: RARE_THEME.numOn,
           })
           .setOrigin(1, 0)
       );
@@ -243,16 +279,17 @@ export class LevelUpScene extends Phaser.Scene {
     });
     box.on('pointerdown', () => this.pick(index));
 
-    this.cards.push({ up, root, box, name, num });
+    this.cards.push({ up, theme, root, box, name, num });
   }
 
   private refresh() {
     this.cards.forEach((c, i) => {
       const on = i === this.selected;
-      c.box.setFillStyle(on ? BG_ON : BG_IDLE);
-      c.box.setStrokeStyle(on ? 3 : 2, on ? LINE_ON : LINE_IDLE);
-      c.name.setColor(on ? '#ffffff' : '#ffe9b8');
-      c.num.setColor(on ? '#8ecf5a' : '#8d7f70');
+      const th = c.theme;
+      c.box.setFillStyle(on ? th.bgOn : th.bgIdle);
+      c.box.setStrokeStyle(on ? 3 : 2, on ? th.lineOn : th.lineIdle);
+      c.name.setColor(on ? '#ffffff' : th.name);
+      c.num.setColor(on ? th.numOn : th.num);
       c.root.setScale(on ? 1.05 : 1);
     });
   }
