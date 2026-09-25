@@ -29,7 +29,7 @@ src/
   entities/Boss.ts           BOSS，繼承 Enemy 但不進物件池
   entities/hitbox.ts         applySprite / setFacing / hitGap
   systems/WeaponSystem.ts    揮刀判定與扇形特效
-  systems/SpawnDirector.ts   生成速率、移動速度倍率、種類解鎖曲線
+  systems/SpawnDirector.ts   生成速率、種類解鎖曲線
   systems/SfxBus.ts          音效播放與節流
   scenes/                    Boot → Menu → Game（+ UI / LevelUp / GameOver / GameClear）
 public/images/               所有貼圖（player / enemies/<key> / boss / gem / particle / ground）
@@ -72,7 +72,7 @@ Phaser 翻面不會繞 origin，helper 都處理掉了。武器命中用 `hitGap
   （r + image），再放一張 `public/images/enemies/<key>.png`，不需其他改動。
 - **新強化**：在 `data/upgrades.ts` 加一筆 `Upgrade`。有上限的用 `maxStacks`。
 - **難度調整**：`SpawnDirector` 的 `rateAt()`（生成速率）、`enemies.ts` 的 `hp` / `unlockAt`。
-  敵人血量刻意不隨時間成長，難度只靠數量與新種類推進。
+  敵人血量與速度刻意不隨時間成長，難度只靠數量與新種類推進。
 
 ## 待辦
 

@@ -12,7 +12,7 @@ export type BossAction = 'none' | 'summon' | 'aoe';
 export class Boss extends Enemy {
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene);
-    this.spawn(BOSS_DEF, x, y, 1);
+    this.spawn(BOSS_DEF, x, y);
     this.setDepth(8);
   }
 
