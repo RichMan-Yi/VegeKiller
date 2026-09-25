@@ -112,7 +112,7 @@ export class WeaponSystem {
     out.push({ enemy: c.enemy, killed, damage });
   }
 
-  /** 扇形內、射程內的目標，依距離由近到遠 */
+  /** 碰撞圓與扇形有相交的目標，依距離由近到遠 */
   private collectInArc(enemies: Enemy[], angle: number): Candidate[] {
     const half = this.arcRad / 2;
     const found: Candidate[] = [];
@@ -122,8 +122,20 @@ export class WeaponSystem {
       // 距離量到碰撞圓邊緣（角色位置就是圓心）
       const dist = hitGap(e, this.player.x, this.player.y);
       if (dist > this.reach) continue;
-      const toEnemy = Math.atan2(e.y - this.player.y, e.x - this.player.x);
-      if (Math.abs(Phaser.Math.Angle.Wrap(toEnemy - angle)) > half) continue;
+      const dx = e.x - this.player.x;
+      const dy = e.y - this.player.y;
+      const toEnemy = Math.atan2(dy, dx);
+      const off = Phaser.Math.Angle.Wrap(toEnemy - angle);
+      // 圓心在扇形外時，碰撞圓只要碰到較近那條扇形邊就算中，
+      // 不然站在扇形兩側、身體被刀光蓋到一半的敵人會漏判
+      if (Math.abs(off) > half && dist > 0) {
+        const r = (e.body as Phaser.Physics.Arcade.Body).halfWidth;
+        const edge = angle + Math.sign(off) * half;
+        const ux = Math.cos(edge);
+        const uy = Math.sin(edge);
+        const t = Phaser.Math.Clamp(dx * ux + dy * uy, 0, this.reach);
+        if (Math.hypot(dx - ux * t, dy - uy * t) > r) continue;
+      }
       found.push({ enemy: e, dist, angle: toEnemy });
     }
     return found.sort((a, b) => a.dist - b.dist);
