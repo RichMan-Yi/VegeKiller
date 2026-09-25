@@ -9,11 +9,16 @@ import { Boss } from '../entities/Boss';
 import { BOSS, BOSS_DEF } from '../data/boss';
 import { artScale } from '../data/assets';
 import { autoPickUpgrade } from './LevelUpScene';
+import { isTouchUI } from './screenKit';
 
 export const WORLD = { w: 2600, h: 2600 };
 
 /** 按 B 測試 BOSS 戰時，把角色直接升到這個等級（每級隨機套一個強化） */
 const TEST_BOSS_LEVEL = 20;
+
+/** 鏡頭縮放。手機螢幕小，視野（可見的寬、高）放大成桌面版的兩倍 */
+const CAMERA_ZOOM = 1.15;
+const CAMERA_ZOOM_TOUCH = CAMERA_ZOOM / 2;
 
 /** 單次接觸傷害最多累計幾隻敵人。取最高的幾隻相加，避免人數線性爆炸 */
 const CONTACT_STACK = 3;
@@ -78,7 +83,7 @@ export class GameScene extends Phaser.Scene {
 
     this.cameras.main.setBounds(0, 0, WORLD.w, WORLD.h);
     this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
-    this.cameras.main.setZoom(1.15);
+    this.cameras.main.setZoom(isTouchUI() ? CAMERA_ZOOM_TOUCH : CAMERA_ZOOM);
 
     this.keys = this.input.keyboard!.addKeys(
       'W,A,S,D,UP,LEFT,DOWN,RIGHT'
