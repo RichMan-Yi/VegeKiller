@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import type { RunState } from './GameScene';
 import { t } from '../i18n';
-import { FONT, drawScreenBackground, drawStatPanel, makeScreenButton, restartOnResize } from './screenKit';
+import { FONT, drawScreenBackground, drawStatPanel, isTouchUI, makeScreenButton, restartOnResize } from './screenKit';
 
 const HEAD_COLOR = '#ffd166';
 const HEART_COLOR = '#ff7fa8';
@@ -165,7 +165,8 @@ export class GameClearScene extends Phaser.Scene {
         color: '#8d7f70',
       })
       .setOrigin(0.5, 0)
-      .setDepth(2);
+      .setDepth(2)
+      .setVisible(!isTouchUI());
   }
 
   /** 從畫面上緣飄落的彩色紙片（particle 是白圖，用 tint 上色） */

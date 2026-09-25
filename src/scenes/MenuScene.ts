@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { resetUpgrades } from './LevelUpScene';
-import { FONT, drawScreenBackground, makeScreenButton, restartOnResize } from './screenKit';
+import { FONT, drawScreenBackground, isTouchUI, makeScreenButton, restartOnResize } from './screenKit';
 import { LANGS, LANG_LABELS, getLang, setLang, t, type Lang } from '../i18n';
 
 const LANG_PILL_W = 92;
@@ -74,13 +74,17 @@ export class MenuScene extends Phaser.Scene {
         color: '#8d7f70',
       })
       .setOrigin(0.5, 0)
-      .setDepth(2);
+      .setDepth(2)
+      // 觸控裝置沒有鍵盤，Enter / 空白鍵提示沒意義
+      .setVisible(!isTouchUI());
 
     // ── 語言選單 ──
     this.drawLangPicker(w / 2, hintY + HINT_H + 24 + LANG_PILL_H / 2);
 
     // ── 操作說明：畫面底部，放得下就排一列，放不下每項一行 ──
-    const tips = [t('menu.tip.move'), t('menu.tip.mouse'), t('menu.tip.attack'), t('menu.tip.mute')];
+    const tips = isTouchUI()
+      ? [t('menu.tip.touchMove'), t('menu.tip.attack')]
+      : [t('menu.tip.move'), t('menu.tip.mouse'), t('menu.tip.attack'), t('menu.tip.mute')];
     const tipText = this.add
       .text(w / 2, h - 24, tips.join('　·　'), {
         fontFamily: FONT,

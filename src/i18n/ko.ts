@@ -8,12 +8,14 @@ export const ko: Messages = {
   'menu.tip.mouse': '마우스를 누르고 있어도 이동',
   'menu.tip.attack': '공격은 자동',
   'menu.tip.mute': 'M 음소거',
+  'menu.tip.touchMove': '화면을 누르고 있으면 손가락 쪽으로 이동',
 
   'hud.status': 'Lv.{level}   {time}   처치 {kills}   HP {hp}/{maxHp}',
 
   'levelUp.title': '레벨 업! 하나를 고르세요',
   'levelUp.titleMore': '레벨 업! 하나를 고르세요　(남은 선택 {count}회)',
   'levelUp.hint': '← → 선택　스페이스 / Enter 확정\n카드를 클릭하거나 1 / 2 / 3을 눌러도 돼요',
+  'levelUp.hintTouch': '카드를 눌러 선택하세요',
   'levelUp.rare': '희귀',
 
   'stat.survived': '버틴 시간',

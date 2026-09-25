@@ -3,6 +3,7 @@ import { UPGRADES, tierWeight, type Upgrade } from '../data/upgrades';
 import type { PlayerStats } from '../entities/Player';
 import type { GameScene } from './GameScene';
 import { t, upgradeText } from '../i18n';
+import { isTouchUI } from './screenKit';
 
 const taken = new Map<string, number>();
 export function resetUpgrades() {
@@ -45,6 +46,9 @@ function weightedPicks(pool: Upgrade[], n: number): Upgrade[] {
   return out;
 }
 
+/** 比這個寬才把三張卡橫排；手機直向等窄螢幕改成由上往下排的長條卡 */
+const ROW_MIN_W = 640;
+
 const BG_IDLE = 0x241d19;
 const BG_ON = 0x3a2e22;
 const LINE_IDLE = 0x6b5a4a;
@@ -80,14 +84,6 @@ export class LevelUpScene extends Phaser.Scene {
     const { width: w, height: h } = this.scale;
     this.add.rectangle(0, 0, w, h, 0x0d0a09, 0.78).setOrigin(0);
 
-    this.add
-      .text(w / 2, h * 0.27, this.titleText(), {
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '30px',
-        color: '#ffe9b8',
-      })
-      .setOrigin(0.5);
-
     const picks = this.rollChoices(3);
     // 所有強化都達上限時池子會是空的。絕對不能留一個沒有卡片的畫面，
     // 那會讓按鍵全部失效、遊戲永遠停在暫停狀態。
@@ -96,25 +92,50 @@ export class LevelUpScene extends Phaser.Scene {
       return;
     }
 
-    const cardW = Math.min(240, (w - 100) / 3);
-    const cardH = 168;
-    const gap = 20;
-    const totalW = picks.length * cardW + (picks.length - 1) * gap;
-    const startX = (w - totalW) / 2 + cardW / 2;
+    const title = this.add
+      .text(w / 2, 0, this.titleText(), {
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '30px',
+        color: '#ffe9b8',
+        align: 'center',
+        wordWrap: { width: w - 32, useAdvancedWrap: true },
+      })
+      .setOrigin(0.5, 0);
 
-    picks.forEach((up, i) =>
-      this.makeCard(up, startX + i * (cardW + gap), h * 0.5, cardW, cardH, i)
-    );
-
-    this.add
-      .text(w / 2, h * 0.72, t('levelUp.hint'), {
+    const column = w < ROW_MIN_W;
+    const hint = this.add
+      .text(w / 2, 0, t(column || isTouchUI() ? 'levelUp.hintTouch' : 'levelUp.hint'), {
         fontFamily: 'system-ui, sans-serif',
         fontSize: '14px',
         color: '#8d7f70',
         align: 'center',
         lineSpacing: 6,
+        wordWrap: { width: w - 32, useAdvancedWrap: true },
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5, 0);
+
+    // 卡片尺寸：橫排是三張直立卡，直排是三張橫長條
+    const cardW = column ? Math.min(w - 32, 440) : Math.min(240, (w - 100) / 3);
+    const cardH = column ? 92 : 168;
+    const gap = column ? 14 : 20;
+    const cardsH = column ? picks.length * cardH + (picks.length - 1) * gap : cardH;
+
+    // 標題、卡片、提示整組垂直置中
+    const groupH = title.height + 32 + cardsH + 28 + hint.height;
+    const top = Math.max(12, (h - groupH) / 2);
+    title.setY(top);
+    const cardsTop = top + title.height + 32;
+    hint.setY(cardsTop + cardsH + 28);
+
+    picks.forEach((up, i) => {
+      if (column) {
+        this.makeCard(up, w / 2, cardsTop + cardH / 2 + i * (cardH + gap), cardW, cardH, i, true);
+      } else {
+        const totalW = picks.length * cardW + (picks.length - 1) * gap;
+        const x = (w - totalW) / 2 + cardW / 2 + i * (cardW + gap);
+        this.makeCard(up, x, cardsTop + cardH / 2, cardW, cardH, i, false);
+      }
+    });
 
     this.bindKeys();
     this.refresh();
@@ -132,6 +153,11 @@ export class LevelUpScene extends Phaser.Scene {
     kb.on('keydown-A', () => this.move(-1));
     kb.on('keydown-RIGHT', () => this.move(1));
     kb.on('keydown-D', () => this.move(1));
+    // 直排時上下選比較直覺，橫排時按上下也不會壞
+    kb.on('keydown-UP', () => this.move(-1));
+    kb.on('keydown-W', () => this.move(-1));
+    kb.on('keydown-DOWN', () => this.move(1));
+    kb.on('keydown-S', () => this.move(1));
     kb.on('keydown-SPACE', () => this.confirm());
     kb.on('keydown-ENTER', () => this.confirm());
     kb.on('keydown-ONE', () => this.pick(0));
@@ -143,38 +169,55 @@ export class LevelUpScene extends Phaser.Scene {
     return weightedPicks(availableUpgrades(), n);
   }
 
-  private makeCard(up: Upgrade, cx: number, cy: number, w: number, h: number, index: number) {
+  /**
+   * wide = true 是直排用的橫長條卡：名稱與說明靠左、編號在右；
+   * false 是橫排用的直立卡：全部置中。
+   */
+  private makeCard(
+    up: Upgrade,
+    cx: number,
+    cy: number,
+    w: number,
+    h: number,
+    index: number,
+    wide: boolean
+  ) {
     const root = this.add.container(cx, cy);
     const text = upgradeText(up.id);
 
     const box = this.add.rectangle(0, 0, w, h, BG_IDLE).setStrokeStyle(2, LINE_IDLE);
     box.setInteractive({ useHandCursor: true });
 
+    const padX = 18;
+    const numW = 36;
     const name = this.add
-      .text(0, -h / 2 + 30, text.name, {
+      .text(wide ? -w / 2 + padX : 0, wide ? -h / 2 + 14 : -h / 2 + 30, text.name, {
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '22px',
+        fontSize: wide ? '20px' : '22px',
         color: '#ffe9b8',
       })
-      .setOrigin(0.5);
-    // 窄螢幕的卡片很窄，英文／韓文名稱比中文長，放不下就縮小字級
-    const nameMaxW = w - 12;
-    if (name.width > nameMaxW) name.setFontSize(Math.max(12, Math.floor((22 * nameMaxW) / name.width)));
+      .setOrigin(wide ? 0 : 0.5, wide ? 0 : 0.5);
+    // 卡片窄時英文／韓文名稱比中文長，放不下就縮小字級
+    const nameMaxW = wide ? w - padX * 2 - numW - 40 : w - 12;
+    const baseSize = wide ? 20 : 22;
+    if (name.width > nameMaxW) {
+      name.setFontSize(Math.max(12, Math.floor((baseSize * nameMaxW) / name.width)));
+    }
 
     const desc = this.add
-      .text(0, -h / 2 + 64, text.desc, {
+      .text(wide ? -w / 2 + padX : 0, wide ? -h / 2 + 44 : -h / 2 + 64, text.desc, {
         fontFamily: 'system-ui, sans-serif',
         fontSize: '14px',
         color: '#cfc3b4',
-        align: 'center',
-        wordWrap: { width: w - 32, useAdvancedWrap: true },
+        align: wide ? 'left' : 'center',
+        wordWrap: { width: wide ? w - padX * 2 - numW : w - 32, useAdvancedWrap: true },
       })
-      .setOrigin(0.5, 0);
+      .setOrigin(wide ? 0 : 0.5, 0);
 
     const num = this.add
-      .text(0, h / 2 - 22, String(index + 1), {
+      .text(wide ? w / 2 - padX - numW / 2 : 0, wide ? 4 : h / 2 - 22, String(index + 1), {
         fontFamily: 'system-ui, sans-serif',
-        fontSize: '13px',
+        fontSize: wide ? '18px' : '13px',
         color: '#8d7f70',
       })
       .setOrigin(0.5);

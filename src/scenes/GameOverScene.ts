@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import type { RunState } from './GameScene';
 import { t } from '../i18n';
-import { FONT, drawScreenBackground, drawStatPanel, makeScreenButton, restartOnResize } from './screenKit';
+import { FONT, drawScreenBackground, drawStatPanel, isTouchUI, makeScreenButton, restartOnResize } from './screenKit';
 
 export class GameOverScene extends Phaser.Scene {
   private result!: RunState;
@@ -94,7 +94,8 @@ export class GameOverScene extends Phaser.Scene {
         color: '#8d7f70',
       })
       .setOrigin(0.5, 0)
-      .setDepth(2);
+      .setDepth(2)
+      .setVisible(!isTouchUI());
 
     this.input.keyboard!.once('keydown-SPACE', () => this.leave());
     this.input.keyboard!.once('keydown-ENTER', () => this.leave());

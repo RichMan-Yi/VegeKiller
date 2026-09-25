@@ -10,12 +10,14 @@ export const en = {
   'menu.tip.mouse': 'Hold the mouse to walk',
   'menu.tip.attack': 'Attacks are automatic',
   'menu.tip.mute': 'M to mute',
+  'menu.tip.touchMove': 'Touch and hold to move',
 
   'hud.status': 'Lv.{level}   {time}   Kills {kills}   HP {hp}/{maxHp}',
 
   'levelUp.title': 'Level up! Pick one',
   'levelUp.titleMore': 'Level up! Pick one  ({count} more)',
   'levelUp.hint': '← → Select　Space / Enter Confirm\nOr click a card, or press 1 / 2 / 3',
+  'levelUp.hintTouch': 'Tap a card to pick it',
   'levelUp.rare': 'RARE',
 
   'stat.survived': 'Survived',

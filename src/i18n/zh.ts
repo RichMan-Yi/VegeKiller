@@ -8,12 +8,14 @@ export const zh: Messages = {
   'menu.tip.mouse': '按住滑鼠也能走',
   'menu.tip.attack': '攻擊自動觸發',
   'menu.tip.mute': 'M 靜音',
+  'menu.tip.touchMove': '按住畫面就會往手指的方向走',
 
   'hud.status': 'Lv.{level}   {time}   擊殺 {kills}   HP {hp}/{maxHp}',
 
   'levelUp.title': '升級了！選一個',
   'levelUp.titleMore': '升級了！選一個　(還有 {count} 次)',
   'levelUp.hint': '← → 選擇　空白鍵 / Enter 確定\n也可以直接點擊，或按 1 / 2 / 3',
+  'levelUp.hintTouch': '點選一張卡片',
   'levelUp.rare': '稀有',
 
   'stat.survived': '撐了',

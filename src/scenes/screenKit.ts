@@ -99,6 +99,14 @@ export function makeScreenButton(scene: Phaser.Scene, x: number, y: number, labe
   return root;
 }
 
+/**
+ * 主要輸入是不是觸控（手機、平板）。用 pointer: coarse 判斷，
+ * 觸控筆電這類同時有滑鼠的裝置仍算桌面，照常顯示鍵盤提示。
+ */
+export function isTouchUI(): boolean {
+  return window.matchMedia?.('(pointer: coarse)').matches ?? false;
+}
+
 /** RESIZE 模式下視窗大小改變時整頁重排 */
 export function restartOnResize(scene: Phaser.Scene) {
   const relayout = () => scene.scene.restart();
