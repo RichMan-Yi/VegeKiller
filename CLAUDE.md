@@ -20,7 +20,7 @@ src/
   data/sprites.jsonc          每個角色的判定半徑 r + 圖片外觀（顯示寬度、相對角色位置的偏移）
   data/enemies.ts            蔬菜圖鑑：數值 + 配色 + 解鎖時間 + 出現權重
   data/upgrades.ts           升級池
-  data/boss.ts               BOSS 數值（觸發等級、血量、技能節奏）
+  data/boss.ts               BOSS 數值（觸發秒數、血量、技能節奏）
   data/progression.ts        升級所需經驗曲線
   data/palette.ts            參考配色（只有色值，造型一律原創）
   data/sprites.ts            讀取並解析 sprites.jsonc

@@ -8,6 +8,26 @@ export function resetUpgrades() {
   taken.clear();
 }
 
+/** 還沒達到 maxStacks 的強化 */
+function availableUpgrades(): Upgrade[] {
+  return UPGRADES.filter((u) => {
+    if (u.maxStacks === undefined) return true;
+    return (taken.get(u.id) ?? 0) < u.maxStacks;
+  });
+}
+
+/**
+ * 測試用：不開選卡畫面，直接隨機套用一個強化並計入疊加次數。
+ * 跳過純回血的 heal，免得浪費一級。
+ */
+export function autoPickUpgrade(stats: PlayerStats) {
+  const pool = availableUpgrades().filter((u) => u.id !== 'heal');
+  if (pool.length === 0) return;
+  const up = Phaser.Utils.Array.GetRandom(pool);
+  up.apply(stats);
+  taken.set(up.id, (taken.get(up.id) ?? 0) + 1);
+}
+
 const BG_IDLE = 0x241d19;
 const BG_ON = 0x3a2e22;
 const LINE_IDLE = 0x6b5a4a;
@@ -103,11 +123,7 @@ export class LevelUpScene extends Phaser.Scene {
   }
 
   private rollChoices(n: number): Upgrade[] {
-    const pool = UPGRADES.filter((u) => {
-      if (u.maxStacks === undefined) return true;
-      return (taken.get(u.id) ?? 0) < u.maxStacks;
-    });
-    return Phaser.Utils.Array.Shuffle(pool.slice()).slice(0, n);
+    return Phaser.Utils.Array.Shuffle(availableUpgrades()).slice(0, n);
   }
 
   private makeCard(up: Upgrade, cx: number, cy: number, w: number, h: number, index: number) {

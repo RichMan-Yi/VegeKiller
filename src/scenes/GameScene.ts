@@ -8,8 +8,12 @@ import { SfxBus } from '../systems/SfxBus';
 import { Boss } from '../entities/Boss';
 import { BOSS } from '../data/boss';
 import { artScale } from '../data/assets';
+import { autoPickUpgrade } from './LevelUpScene';
 
 export const WORLD = { w: 2600, h: 2600 };
+
+/** 按 B 測試 BOSS 戰時，把角色直接升到這個等級（每級隨機套一個強化） */
+const TEST_BOSS_LEVEL = 20;
 
 /** 單次接觸傷害最多累計幾隻敵人。取最高的幾隻相加，避免人數線性爆炸 */
 const CONTACT_STACK = 3;
@@ -89,9 +93,17 @@ export class GameScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-M', () => {
       this.sound.mute = !this.sound.mute;
     });
-    // 測試用：直接跳到 BOSS 戰。正式版把這段刪掉
+    // 測試用：直接升到 TEST_BOSS_LEVEL 並跳到 BOSS 戰。正式版把這段刪掉
     this.input.keyboard!.on('keydown-B', () => {
-      if (this.phase === 'normal') this.startBossFight();
+      if (this.phase !== 'normal') return;
+      while (this.run.level < TEST_BOSS_LEVEL) {
+        this.run.level++;
+        autoPickUpgrade(this.player.stats);
+      }
+      this.run.xp = 0;
+      this.run.xpToNext = xpForLevel(this.run.level);
+      this.player.stats.hp = this.player.stats.maxHp;
+      this.startBossFight();
     });
     // 調整 sprites.jsonc 用：顯示／隱藏所有碰撞框
     this.input.keyboard!.on('keydown-H', () => {
@@ -206,7 +218,7 @@ export class GameScene extends Phaser.Scene {
 
     // ===== 其餘：生成與拾取 =====
     if (this.phase === 'normal') {
-      if (this.run.level >= BOSS.triggerLevel) {
+      if (elapsedSec >= BOSS.triggerAtSec) {
         this.startBossFight();
       } else {
         const spawnCount = this.director.update(delta, elapsedSec);
@@ -408,7 +420,8 @@ export class GameScene extends Phaser.Scene {
 
   /** 第一發鎖定玩家當下位置，其餘散佈在周圍逼玩家持續移動 */
   private castAoe() {
-    for (let i = 0; i < BOSS.aoeCount; i++) {
+    const count = this.bossRef!.aoeCount;
+    for (let i = 0; i < count; i++) {
       const x = i === 0 ? this.player.x : this.player.x + Phaser.Math.Between(-280, 280);
       const y = i === 0 ? this.player.y : this.player.y + Phaser.Math.Between(-280, 280);
       this.telegraphAoe(
